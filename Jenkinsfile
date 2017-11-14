@@ -11,6 +11,10 @@ node {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
 
+         app.inside {
+             sh "docker push andriipetruk/testapp:v1"
+         }                  
+
         app = docker.build("andriipetruk/testapp")
     }
 
