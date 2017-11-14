@@ -17,7 +17,6 @@ node {
              sh "docker build -t  ${DOCKERHUB_USERNAME}/testapp:${BUILD_NUMBER} ."
          }                  
 
-        //app = docker.build("andriipetruk/testapp")
     }
 
     stage('Test image') {
