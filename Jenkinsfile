@@ -9,16 +9,10 @@ node {
         checkout scm
     }
 
-    stage('Build image') {
-        /* This builds the actual image; synonymous to
-         * docker build on the command line */
-
-         app.inside {
-             sh "docker build -t  ${DOCKERHUB_USERNAME}/testapp:${BUILD_NUMBER} ."
-         }                  
-
+    stage("Build image") {
+      sh "docker build -t ${DOCKERHUB_USERNAME}/testapp:${BUILD_NUMBER} ."
     }
-
+    
     stage('Test image') {
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */
