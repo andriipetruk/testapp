@@ -1,3 +1,5 @@
+env.DOCKERHUB_USERNAME = 'andriipetruk'
+
 node {
     def app
 
@@ -12,10 +14,10 @@ node {
          * docker build on the command line */
 
          app.inside {
-             sh "docker push andriipetruk/testapp:v1"
+             sh "docker build -t  ${DOCKERHUB_USERNAME}/testapp:${BUILD_NUMBER} ."
          }                  
 
-        app = docker.build("andriipetruk/testapp")
+        //app = docker.build("andriipetruk/testapp")
     }
 
     stage('Test image') {
