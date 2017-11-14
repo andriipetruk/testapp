@@ -1,6 +1,6 @@
 env.DOCKERHUB_USERNAME = 'andriipetruk'
 
-node {
+ node("docker") {
     def app
 
     stage('Clone repository') {
