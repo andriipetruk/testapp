@@ -1,4 +1,5 @@
 env.DOCKERHUB_USERNAME = 'andriipetruk'
+env.APP_NAME = 'testapp'
 
  node("docker") {
     def app
@@ -10,7 +11,7 @@ env.DOCKERHUB_USERNAME = 'andriipetruk'
     }
 
     stage("Build image") {
-      sh "docker build -t ${DOCKERHUB_USERNAME}/testapp:${BUILD_NUMBER} ."
+     sh "docker build -t ${DOCKERHUB_USERNAME}/${APP_NAME}:${BUILD_NUMBER} ."
     }
     
     stage('Test image') {
@@ -32,7 +33,7 @@ env.DOCKERHUB_USERNAME = 'andriipetruk'
         docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
            // app.push("${env.BUILD_NUMBER}")
            // app.push("latest")
-              sh "docker push ${DOCKERHUB_USERNAME}/jenkins_node:${BUILD_NUMBER}"
+         sh "docker push ${DOCKERHUB_USERNAME}/${APP_NAME}:${BUILD_NUMBER}"
         }
      
     }
