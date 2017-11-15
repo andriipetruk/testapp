@@ -29,7 +29,7 @@ env.APP_NAME = 'testapp'
                     }
                 }
         stage("Build") { sh "docker build -t ${DOCKERHUB_USERNAME}/jenkins_node:${BUILD_NUMBER} ." }
-        stage("Publish") { withDockerRegistry([credentialsId: 'DockerHub']) {
+        stage("Publish") { withDockerRegistry([credentialsId: 'docker-hub-credentials']) {
             sh "docker push ${DOCKERHUB_USERNAME}/jenkins_node:${BUILD_NUMBER}"
             }
             }
