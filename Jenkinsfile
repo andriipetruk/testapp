@@ -1,6 +1,8 @@
 
+env.DOCKERHUB_USERNAME = 'andriipetruk'
+env.APP_NAME = 'testapp'
 
-  node("docker-stage") {
+  node("docker") {
     checkout scm
 
     stage("Staging") {
@@ -19,7 +21,7 @@
     }
   }
 
-  node("docker-prod") {
+  node("docker") {
     stage("Production") {
       try {
         // Create the service if it doesn't exist otherwise just update the image
