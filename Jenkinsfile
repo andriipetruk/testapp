@@ -10,6 +10,10 @@ env.APP_NAME = 'testapp'
         checkout scm
     }
 
+    stage("Unit Test") {
+      sh "docker run --rm -w /code -v ${WORKSPACE}:/code mhart/alpine-node sh -c \"npm i; npm test\""
+    }
+
     stage("Build image") {
      sh "docker build -t ${DOCKERHUB_USERNAME}/${APP_NAME}:${BUILD_NUMBER} ."
     }
