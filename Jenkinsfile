@@ -5,19 +5,34 @@ env.APP_NAME = 'testapp'
   node("docker") {
     checkout scm
 
-    stage("Staging") {
-      try {
-        sh "docker rm -f jenkins_node || true"
-        sh "docker run -d -p 8080:8080 --name=jenkins_node ${DOCKERHUB_USERNAME}/jenkins_node:${BUILD_NUMBER}"
-        sh "docker run --rm ${DOCKERHUB_USERNAME}/jenkins_node:${BUILD_NUMBER} npm test"
-
-      } catch(e) {
-        error "Staging failed"
-      } finally {
-        sh "docker rm -f jenkins_node || true"
-        sh "docker ps -aq | xargs docker rm || true"
-        sh "docker images -aq -f dangling=true | xargs docker rmi || true"
-      }
+    stage("Integration") {
+         checkout scm
+         stage("Unit Test") {
+             sh "docker run --rm -w /code -v ${WORKSPACE}:/code mhart/alpine-node sh -c \"npm i; npm test\""
+             }
+             
+        stage("Integration Test") {
+            try {
+                sh "docker build -t jenkins_node ."
+                sh "docker rm -f jenkins_node || true"
+                sh "docker run -d -p 8080:8080 --name=jenkins_node jenkins_node"
+                // env variable is used to set the server where go test will connect to run the test
+                //sh "docker run --rm -v ${WORKSPACE}:/code --link=jenkins_node -e SERVER=jenkins_node mhart/alpine-node npm test"
+                }
+                catch(e) {
+                    error "Integration Test failed"
+                    }
+                finally {
+                        sh "docker rm -f jenkins_node || true"
+                        sh "docker ps -aq | xargs docker rm || true"
+                        sh "docker images -aq -f dangling=true | xargs docker rmi || true"
+                    }
+                }
+        stage("Build") { sh "docker build -t ${DOCKERHUB_USERNAME}/jenkins_node:${BUILD_NUMBER} ." }
+        stage("Publish") { withDockerRegistry([credentialsId: 'DockerHub']) {
+            sh "docker push ${DOCKERHUB_USERNAME}/jenkins_node:${BUILD_NUMBER}"
+            }
+            }
     }
   }
 
