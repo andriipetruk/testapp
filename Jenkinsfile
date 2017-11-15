@@ -16,9 +16,9 @@ env.APP_NAME = 'testapp'
     
     stage("Integration Test") {
       try {
-        sh "docker build -t {APP_NAME} ."
-        sh "docker rm -f {APP_NAME} || true"
-        sh "docker run -d -p 8080:8080 --name={APP_NAME} {APP_NAME}"
+        sh "docker build -t ${APP_NAME} ."
+        sh "docker rm -f ${APP_NAME} || true"
+        sh "docker run -d -p 8080:8080 --name=${APP_NAME} ${APP_NAME}"
         // env variable is used to set the server where go test will connect to run the test
        //sh "docker run --rm -v ${WORKSPACE}:/code --link=jenkins_node -e SERVER=jenkins_node mhart/alpine-node npm test"
       }
