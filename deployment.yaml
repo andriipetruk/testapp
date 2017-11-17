@@ -1,0 +1,50 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata: 
+  name: {{ template "fullname" . }}
+  labels: 
+    app: {{ template "fullname" . }}
+spec: 
+  replicas: {{ .Values.app.replicas }}
+  template: 
+    metadata: 
+      labels: 
+        app: {{ template "fullname" . }}
+    spec: 
+      containers: 
+        - name: {{ template "fullname" . }}
+          image: {{ .Values.registry.uri }}/{{ .Values.docker.image }}:{{ .Values.docker.version }}
+          imagePullPolicy: Always
+          ports: 
+            - containerPort: {{ .Values.app.inbound }}
+          env: 
+            - name: AKV_CLIENT_ID
+              valueFrom: 
+                secretKeyRef: 
+                  name: {{ .Values.generic.akvSecret.name }}
+                  key: {{ .Values.generic.akvSecret.clientId }}
+            - name: AKV_CLIENT_SECRET
+              valueFrom: 
+                secretKeyRef: 
+                  name: {{ .Values.generic.akvSecret.name }}
+                  key: {{ .Values.generic.akvSecret.clientSecret }}
+            - name: AKV_VAULT_URL
+              valueFrom: 
+                secretKeyRef: 
+                  name: {{ .Values.generic.akvSecret.name }}
+                  key: {{ .Values.generic.akvSecret.vaultUrl }}
+
+{{- if .Values.app.healthcheck.enabled }}
+
+          livenessProbe: 
+            initialDelaySeconds: {{ .Values.app.healthcheck.readiness }}
+            periodSeconds: {{ .Values.app.healthcheck.period }}
+            timeoutSeconds: {{ .Values.app.healthcheck.timeout }}
+            httpGet: 
+              path: {{ .Values.app.healthcheck.uri }}
+              port: {{ .Values.app.inbound }}
+
+{{- end }}
+
+      imagePullSecrets: 
+        - name: {{ .Values.registry.secret }}
